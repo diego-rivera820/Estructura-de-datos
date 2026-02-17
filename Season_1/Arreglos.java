@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Arreglos {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception{
         // creaccion de los arreglos/Arrays/vector. (de la forma lenta)
         /*
          * int[] a = {2,6,8,1,20,40,7,3,5};
@@ -27,7 +27,7 @@ public class Arreglos {
         // int suma = (2+6+8+1+20+40+7+3+5);
         // System.out.println("La suma de los vectores:" + suma);
 
-        // int suma = 0;
+        int suma = 0;
         for (int i = 0; i < a.length; i++) {
             suma += a[i];
         }
