@@ -1,7 +1,9 @@
+package Taller_25;
+
 import java.util.Scanner;
 
-public class Taller_25 {
-    
+public class Ejercicio_1 {
+
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
@@ -22,4 +24,5 @@ public class Taller_25 {
         System.out.println("La suma de los elementos del arreglo es: " + total);
 
     }
+    
 }
