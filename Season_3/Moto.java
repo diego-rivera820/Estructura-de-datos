@@ -1,13 +1,13 @@
 package Season_3;
 
 public class Moto {
-//Atributos
+    // Atributos
     private int Modelo;
     private String Marca;
     private String Color;
     private Double cilindraje;
     private Double Precio;
-    
+
     public Moto(int modelo, String marca, String color, Double cilindraje, Double precio) {
         Modelo = modelo;
         Marca = marca;
@@ -56,6 +56,13 @@ public class Moto {
         Precio = precio;
     }
 
+    public String RealizarMnantenimiento(String mtto){
+    return "Mantenimiento realizado" + mtto;
+    }
+    @Override
+    public String toString() {
+        return "Moto [Modelo=" + Modelo + ", Marca=" + Marca + ", Color=" + Color + ", cilindraje=" + cilindraje
+                + ", Precio=" + Precio + "]";
+    }
 
-    
 }
