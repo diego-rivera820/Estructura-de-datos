@@ -1,12 +1,12 @@
 package Season_5.Momento_1;
 
-public class contenedor {
+public class Contenedor {
 
     private String id;
     private double peso;
     private String origen;
     
-    public contenedor(String id, double peso, String origen) {
+    public Contenedor(String id, double peso, String origen) {
         this.id = id;
         this.peso = peso;
         this.origen = origen;

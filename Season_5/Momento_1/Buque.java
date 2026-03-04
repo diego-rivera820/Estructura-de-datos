@@ -1,11 +1,11 @@
 package Season_5.Momento_1;
 
-public class buque {
+public class Buque {
 
     private String nombre;
     private String matricula;
     
-    public buque(String nombre, String matricula) {
+    public Buque(String nombre, String matricula) {
         this.nombre = nombre;
         this.matricula = matricula;
     }
