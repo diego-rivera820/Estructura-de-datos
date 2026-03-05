@@ -1,38 +1,31 @@
 package Season_5.Momento_1;
 
+import java.util.Random;
+
 public class Buque {
 
     private String nombre;
     private String matricula;
-    
-    public Buque(String nombre, String matricula) {
-        this.nombre = nombre;
-        this.matricula = matricula;
-    }
 
-    public String getNombre() {
-        return nombre;
-    }
+    private static String[] nombres = {
+            "Titan", "Poseidón", "Atlántico",
+            "Mar Azul", "Neptuno", "Caribe",
+            "Pacifico", "Libertad", "Oceanic", "Imperial"
+    };
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+    public Buque() {
+        Random r = new Random();
 
-    public String getMatricula() {
-        return matricula;
-    }
-
-    public void setMatricula(String matricula) {
-        this.matricula = matricula;
+        this.nombre = nombres[r.nextInt(nombres.length)];
+        this.matricula = "MAT-" + (1000 + r.nextInt(9000));
     }
 
     @Override
     public String toString() {
-        return "buque [nombre=" + nombre + ", matricula=" + matricula + "]";
+        return nombre + " - " + matricula;
     }
-
-    
-
-    
-    
 }
+
+    
+    
+
