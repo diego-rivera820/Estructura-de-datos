@@ -19,7 +19,7 @@ public class Contenedor {
         Random r = new Random();
 
         this.codigo = "CONT-" + contador++;
-        this.peso = 5 + (45 * r.nextDouble()); // Entre 5 y 50 toneladas
+        this.peso = 5 + r.nextDouble() * 45; // Entre 5 y 50 toneladas
         this.origen = paises[r.nextInt(paises.length)];
     }
 

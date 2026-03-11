@@ -9,6 +9,7 @@ public class Main {
         Puerto puerto = new Puerto();
         int opcion;
 
+        //ciclo del menu principal
         do {
             System.out.println("\n===== MENU PRINCIPAL =====");
             System.out.println("1. Registrar Buque ");

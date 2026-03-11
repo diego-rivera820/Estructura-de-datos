@@ -6,7 +6,7 @@ public class Buque {
 
     private String nombre;
     private String matricula;
-
+    
     private static String[] nombres = {
             "Titan", "Poseidón", "Atlántico",
             "Mar Azul", "Neptuno", "Caribe",

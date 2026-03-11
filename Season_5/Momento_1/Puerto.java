@@ -18,7 +18,7 @@ public class Puerto {
         for (int i = 0; i < buques.length; i++) {
             if (buques[i] == null) {
                 buques[i] = new Buque();
-                System.out.println("Buque registrado: " + buques[i]);
+                System.out.println("Se registró el buque: " + buques[i]);
                 return;
             }
         }
@@ -84,7 +84,11 @@ public class Puerto {
                 if (matriz[i][j] != null) {
 
                     String origen = matriz[i][j].getOrigen();
-                    mapa.put(origen, mapa.getOrDefault(origen, 0) + 1);
+                    if (mapa.containsKey(origen)) {
+                        mapa.put(origen, mapa.get(origen) + 1);
+                    } else {
+                        mapa.put(origen, 1);
+                    }
                 }
             }
         }
