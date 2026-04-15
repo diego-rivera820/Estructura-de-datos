@@ -14,4 +14,8 @@ public class Contenedores {
 
     }
 
+     @Override
+    public String toString() {
+        return id + " | Peso: " + peso + " | Prioridad: " + prioridad;
+
 }
