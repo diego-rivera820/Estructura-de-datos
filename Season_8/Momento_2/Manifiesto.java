@@ -6,12 +6,11 @@ public class Manifiesto {
 
     Contenedor[] lista;
 
-    public Manifiesto(int tamaño){
+    public Manifiesto(int tamaño) {
         lista = new Contenedor[tamaño];
     }
 
-
-    public void agregarContenedor (int index, Contenedor c) {
+    public void agregarContenedor(int index, Contenedor c) {
 
         lista[index] = c;
     }
