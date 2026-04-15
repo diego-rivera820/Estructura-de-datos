@@ -1,26 +1,22 @@
-package Season_8.Momento_2;
-
-import Season_5.Momento_1.Contenedor;
-
-public class Manifiesto {
+public class Manifesto {
 
     Contenedor[] lista;
 
-    public Manifiesto(int tamaño) {
+    public Manifesto(int tamaño) {
         lista = new Contenedor[tamaño];
     }
 
     public void agregarContenedor(int index, Contenedor c) {
-
         lista[index] = c;
     }
 
-    public double calcularPesoTotal(){
-
+    public double calcularPesoTotal() {
         double total = 0;
 
-        if(int i = 0; i < lista.length; i++){
-            total += lista[i].getPeso();
+        for (int i = 0; i < lista.length; i++) {
+            if (lista[i] != null) {
+                total += lista[i].getPeso();
+            }
         }
 
         return total;

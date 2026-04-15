@@ -1,4 +1,4 @@
-package Season_8;
+
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -10,7 +10,7 @@ Queue<Contenedor> cola;
 
     public Inspeccion(){
 
-        cola = new likendlist<> ();
+        cola = new LinkedList<>();
 
     }
 

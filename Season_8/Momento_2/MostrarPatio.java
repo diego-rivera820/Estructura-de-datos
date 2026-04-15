@@ -1,18 +1,19 @@
-package Season_8.Momento_2;
+public class MostrarPatio {
 
-public void mostrarPatio() {
-    System.out.println("\n--- PATIO ---");
+    public static void mostrar(Contenedor[][] patio) {
 
-    for (int i = 0; i < patio.length; i++) {
-        for (int j = 0; j < patio[i].length; j++) {
+        System.out.println("\n===== PATIO =====");
 
-            if (patio[i][j] == null) {
-                System.out.print("[ VACIO ] ");
-            } else {
-                System.out.print("[" + patio[i][j].id + "] ");
+        for (int i = 0; i < patio.length; i++) {
+            for (int j = 0; j < patio[i].length; j++) {
+
+                if (patio[i][j] == null) {
+                    System.out.print("[ VACIO ] ");
+                } else {
+                    System.out.print("[ " + patio[i][j].getId() + " ] ");
+                }
             }
-
+            System.out.println();
         }
-        System.out.println();
     }
 }
