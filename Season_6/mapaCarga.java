@@ -2,27 +2,14 @@ package Season_6;
 
 public class mapaCarga {
 
-    public static void main(String[] args) {
+    private energiaContenedores[][] matriz;
 
-        // Creación de la matriz 3x3
-        int[][] mc = new int[3][3];
-
-        // Llenar la matriz (ejemplo: números consecutivos)
-        int contador = 1;
-
-        for (int i = 0; i < mc.length; i++) {
-            for (int j = 0; j < mc[i].length; j++) {
-                mc[i][j] = contador++;
-            }
-        }
-
-        // Mostrar posiciones y elementos
-        for (int i = 0; i < mc.length; i++) {
-            for (int j = 0; j < mc[i].length; j++) {
-                System.out.println("mc[" + i + "][" + j + "] = " + mc[i][j]);
-            }
-        }
+    
+    public mapaCarga() {
+         matriz = new energiaContenedores[10][10];
     }
+        
+    
 
     public void mostrarMatriz() {
 
@@ -30,7 +17,7 @@ public class mapaCarga {
 
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                if (mc[i][j] == null)
+                if (matriz[i][j] == null)
                     System.out.print("[   ]");
                 else
                     System.out.print("[ X ]");

@@ -14,19 +14,32 @@ public class Suministros {
         this.nivelEnergia = 50 + r.nextInt() * 101;// entre 50 y 150
         this.prioridad = prioridad;
 
-        if (nivelEnergia > 100)
-
-        {
-            this.prioridad = "Alta";
+        if (nivelEnergia > 100) {
+        this.prioridad = "Alta";
+        
         } else {
             this.prioridad = "Baja";
         }
 
-        
+    
 
     }
 
-     
+     /*Paso 1: Filtro de Energía (Arreglo 1D)
+     Cree un arreglo de enteros llamado energiaContenedores con 12 valores aleatorios entre 50
+     y 150. Genere un segundo arreglo que contenga únicamente los valores que sean múltiplos
+     de 10. Los valores que no cumplan esta condición deben descartarse.
+     */
+
+    
+
+
+
+
+
+
+
+
 
     public String getId() {
         return id;
