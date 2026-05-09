@@ -12,16 +12,16 @@ public class Buque {
 
         if (pila.isEmpty() || c.getPeso() <= pila.peek().getPeso()) {
             pila.push(c);
-            System.out.println("✅ Contenedor cargado");
+            System.out.println(" Contenedor cargado");
         } else {
-            System.out.println("❌ No se puede apilar (peso mayor)");
+            System.out.println(" No se puede apilar (peso mayor)");
         }
     }
 
     public void mostrar() {
 
         if (pila.isEmpty()) {
-            System.out.println("⚠️ Buque vacío");
+            System.out.println(" Buque vacío");
             return;
         }
 
