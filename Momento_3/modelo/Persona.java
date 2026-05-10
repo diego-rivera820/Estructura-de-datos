@@ -1,4 +1,4 @@
-package modelo;
+package Momento_3.modelo;
 
 /*clase abstracta para representar cualquier persona de la universidad
   se aplica encapsulamineto con atributos protegidos
@@ -17,9 +17,15 @@ public abstract class Persona {
     }
 
     // getters 
-    public String getid(){return id;}
-    public String getnombre(){return nombre;}
-    public String getemail(){return email;}
+    public String getid(){
+        return id;
+    }
+    public String getnombre(){
+        return nombre;
+    }
+    public String getemail(){
+        return email;
+    }
 
     //Metodo abstracto que obliga a las clases hijas a implementrl polimorfismo
     public abstract void mostrarInformacion();
