@@ -31,7 +31,7 @@ public class GestorAulas {
             System.out.println("--- AULAS DISPONIBLES (Orden Alfabético) ---");
              // Al iterar los valores de un TreeMap, Java respeta el orden de las llaves
             for (Aula aula : directorioAulas.values()) {
-                System.out.println("Aula: " + aula.getNombre() + " - Capacidad: " + aula.getCapacidad() + " estudiantes.");{
+                System.out.println("Aula: " + aula.getNombre() + " - Capacidad: " + aula.getCapacidad() + " estudiantes.");
             
             }
    }
