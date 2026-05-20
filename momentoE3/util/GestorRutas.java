@@ -2,138 +2,130 @@ package momentoE3.util;
 
 import java.util.Stack;
 
-//gestor encargado de las rutas del campus utilizando grafos y el algoritmo de dijkstra
-
 public class GestorRutas {
-
     private final int NUM_EDIFICIOS = 5;
-    // matriz nativa para distancias
     private int[][] matrizAdyacencia;
-    //arreglo nativo para mapear el indice numerico al nombre del edificio
     private String[] nombresEdificios;
-
-    //uso un valor muy alto para representar el infinnito(no hay conexion directa)
     private final int INFINITO = 999999;
 
-    public GestorRutas(){
+    public GestorRutas() {
         matrizAdyacencia = new int[NUM_EDIFICIOS][NUM_EDIFICIOS];
-        nombresEdificios = new String[]{"ingenieria", "Biblioteca", "Cafeteria", "Rectoria", "Laboratorio"};
+        nombresEdificios = new String[]{"Ingenieria", "Biblioteca", "Cafeteria", "Rectoria", "Laboratorio"};
 
-        //inicializamos la matriz. si i == j la distancia es 0. sino, es infinito
-        for (int i = 0; i < NUM_EDIFICIOS; i++){
-            for(int j = 0; j < NUM_EDIFICIOS; j++){
-                if (i == j) {
-                    matrizAdyacencia[i][j] = 0;
-                } else {
-                    matrizAdyacencia[i][j] = INFINITO;
-                }
+        for (int i = 0; i < NUM_EDIFICIOS; i++) {
+            for (int j = 0; j < NUM_EDIFICIOS; j++) {
+                matrizAdyacencia[i][j] = (i == j) ? 0 : INFINITO;
             }
         }
     }
 
-    //agrega un camino entre dos edificios (grafo no dirigido)
-    public void agregaConexion(int origen, int destino, int distancia){
-        //al ser no dirigido, la distancia es igual en ambos sentidos
+    public void agregaConexion(int origen, int destino, int distancia) {
+        if (!indiceValido(origen) || !indiceValido(destino) || distancia <= 0) {
+            System.out.println("Datos de conexion invalidos.");
+            return;
+        }
+
         matrizAdyacencia[origen][destino] = distancia;
         matrizAdyacencia[destino][origen] = distancia;
     }
 
-    public void mostrarEdificios(){
+    public void mostrarEdificios() {
         System.out.println("Edificios registrados:");
-        for (int i = 0; i < NUM_EDIFICIOS; i++){
+        for (int i = 0; i < NUM_EDIFICIOS; i++) {
             System.out.println(i + ": " + nombresEdificios[i]);
         }
     }
 
-    //implementacion pura del algoritmo de dijkstra
-    public void calcularRutaMasCorta(int origen, int destino){
-        int[] distancias = new int[NUM_EDIFICIOS]; //guarda la distancia minima desde el origen
-        boolean[] visitados = new boolean[NUM_EDIFICIOS]; // marca los nodos ya procesados
-        int[] previo = new int[NUM_EDIFICIOS]; //guarda el nodo anterior para reconstruir la ruta
-    
-        //configuracion inicial
-        for (int i = 0; i < NUM_EDIFICIOS; i++){
+    public void calcularRutaMasCorta(int origen, int destino) {
+        if (!indiceValido(origen) || !indiceValido(destino)) {
+            System.out.println("Origen o destino invalido.");
+            return;
+        }
+
+        int[] distancias = new int[NUM_EDIFICIOS];
+        boolean[] visitados = new boolean[NUM_EDIFICIOS];
+        int[] previo = new int[NUM_EDIFICIOS];
+
+        for (int i = 0; i < NUM_EDIFICIOS; i++) {
             distancias[i] = INFINITO;
             visitados[i] = false;
-            previo[i] = -1; //significa que no tiene nodo previo aun
+            previo[i] = -1;
         }
-        distancias[origen] = 0; // la distancia al origen es 0
 
-        //procesar todos los vertices
-        for(int i = 0; i < NUM_EDIFICIOS - 1; i++){
-            //encontrar el vertice no visitado con la dstancia minima
+        distancias[origen] = 0;
+
+        for (int i = 0; i < NUM_EDIFICIOS - 1; i++) {
             int u = distanciaMinima(distancias, visitados);
+            if (u == -1) {
+                break;
+            }
+
             visitados[u] = true;
 
-            //actualizar las distancias de los vertices adyacentes al vertice seleccionado (u)
-            for (int v = 0; v < NUM_EDIFICIOS; v++){
-                //si no ha sido visitado hay conexion (!= INFINITO) y el camino a traves de la ues mas corto
-                if(!visitados[v] && matrizAdyacencia[u][v] != INFINITO
-                    && distancias[u] + matrizAdyacencia[u][v] < distancias[v]){
-
-                        distancias[v] = distancias[u] + matrizAdyacencia[u][v];
-                        previo[v] = u; //guardamos de donde venimos para poder dibujar la ruta luego
+            for (int v = 0; v < NUM_EDIFICIOS; v++) {
+                if (!visitados[v]
+                        && matrizAdyacencia[u][v] != INFINITO
+                        && distancias[u] != INFINITO
+                        && distancias[u] + matrizAdyacencia[u][v] < distancias[v]) {
+                    distancias[v] = distancias[u] + matrizAdyacencia[u][v];
+                    previo[v] = u;
                 }
-                
             }
         }
 
-        //imprimir el resultado (el camino completo y la distancia total)
         imprimirRuta(origen, destino, distancias, previo);
     }
 
-    //metodo auxiliar para encontrar el vertice de la distancia minima
-    private int distanciaMinima(int[] distancias, boolean[] visitados){
+    private int distanciaMinima(int[] distancias, boolean[] visitados) {
         int min = INFINITO;
         int minIndex = -1;
 
-        for(int v = 0; v < NUM_EDIFICIOS; v++){
-            if (!visitados[v] && distancias[v] <= min){
+        for (int v = 0; v < NUM_EDIFICIOS; v++) {
+            if (!visitados[v] && distancias[v] <= min) {
                 min = distancias[v];
                 minIndex = v;
             }
         }
+
         return minIndex;
     }
 
-    private void imprimirRuta(int origen, int destino, int[] distancias, int[] previo){
-        if(distancias[destino] == INFINITO){
-            System.out.println("No hay ruta disponible entre estos edificios");
+    private void imprimirRuta(int origen, int destino, int[] distancias, int[] previo) {
+        if (distancias[destino] == INFINITO) {
+            System.out.println("No hay ruta disponible entre estos edificios.");
             return;
         }
 
-        System.out.println("--- RESULTADO ---");
-        System.out.println("Ruta mas corta:");
-
-        //uso la clase stack de java como auxiliar rapido para invertir el orden del camino
         Stack<Integer> ruta = new Stack<>();
         int actual = destino;
 
-        //Rastrear hacia atras desde el destino hasta el origen
-        while(actual != -1){
+        while (actual != -1) {
             ruta.push(actual);
             actual = previo[actual];
         }
 
-        //imprimir sacando de la pila
-        StringBuilder caminoAImprimir = new StringBuilder();
-        if (ruta.isEmpty()) {
-            System.out.println("No hay ruta disponible entre estos edificios");
-            return;
-        }
-
+        StringBuilder camino = new StringBuilder();
         int nodoAnterior = ruta.pop();
-        caminoAImprimir.append(nombresEdificios[nodoAnterior]);
+        camino.append(nombresEdificios[nodoAnterior]);
 
-        while (!ruta.isEmpty()){
+        while (!ruta.isEmpty()) {
             int nodoSiguiente = ruta.pop();
             int metrosTramo = matrizAdyacencia[nodoAnterior][nodoSiguiente];
-            caminoAImprimir.append(" -> ").append(nombresEdificios[nodoSiguiente]).append(" (").append(metrosTramo).append("m)");
+            camino.append(" -> ")
+                  .append(nombresEdificios[nodoSiguiente])
+                  .append(" (")
+                  .append(metrosTramo)
+                  .append("m)");
             nodoAnterior = nodoSiguiente;
         }
 
-        System.out.println(caminoAImprimir.toString());
+        System.out.println("--- RESULTADO ---");
+        System.out.println("Ruta mas corta:");
+        System.out.println(camino);
         System.out.println("Distancia TOTAL: " + distancias[destino] + " metros");
     }
-    
+
+    private boolean indiceValido(int indice) {
+        return indice >= 0 && indice < NUM_EDIFICIOS;
+    }
 }

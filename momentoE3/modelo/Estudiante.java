@@ -4,117 +4,204 @@ import java.util.LinkedList;
 
 public class Estudiante extends Persona {
     private int semestreActual;
-
     private String[][] nombresMaterias;
-    //Arreglo nativo para notas
     private Double[][] notas;
-
-    //lista enlazada para el historial
     private LinkedList<String> historialMaterias;
 
-    public Estudiante(String id, String nombre, String email, int semestreActual){
+    public Estudiante(String id, String nombre, String email, int semestreActual) {
         super(id, nombre, email);
         this.semestreActual = semestreActual;
-
-        // inicializacion del arreglo estatico
+        this.nombresMaterias = new String[10][20];
         this.notas = new Double[10][20];
         this.historialMaterias = new LinkedList<>();
-        this.nombresMaterias = new String[10][20];
-
     }
 
-    public int getSemestreActual(){
-         return semestreActual;
-        
+    public int getSemestreActual() {
+        return semestreActual;
     }
 
-    public void registrarNotas(int semestre, String nombreMateria, double nota){
+    public LinkedList<String> getHistorialMaterias() {
+        return historialMaterias;
+    }
+
+    public RegistroNota registrarNotas(int semestre, String nombreMateria, double nota) {
         int indiceSemestre = semestre - 1;
 
-        //buscamos el primer espacio vacio en ese semestre 
-        for(int i = 0; i < 20; i++){
-            if (this.notas[indiceSemestre][i] == null){
-                this.notas[indiceSemestre][i] = nota;
-                this.nombresMaterias[indiceSemestre][i] = nombreMateria;
-                // registrar en el historial de materias cursadas
-                this.historialMaterias.add(nombreMateria + " (Semestre " + semestre + ")");
-                return; //salimos apenas registremos la nota
+        if (indiceSemestre < 0 || indiceSemestre >= 10) {
+            System.out.println("Error: semestre invalido.");
+            return null;
+        }
+
+        for (int i = 0; i < 20; i++) {
+            if (notas[indiceSemestre][i] == null) {
+                notas[indiceSemestre][i] = nota;
+                nombresMaterias[indiceSemestre][i] = nombreMateria;
+                historialMaterias.add(nombreMateria + " (Semestre " + semestre + ")");
+                return new RegistroNota(semestre, i, nombreMateria, nota);
             }
         }
-        System.out.println("Error: No se pueden registrar mas de 20 materias por semestre");
+
+        System.out.println("Error: No se pueden registrar mas de 20 materias por semestre.");
+        return null;
     }
 
-    //genera un string con el reporte completo del estudiante 
-    public String generarReporteAcademico(){
+    public void eliminarNota(RegistroNota registro) {
+        if (registro == null) {
+            return;
+        }
+
+        int indiceSemestre = registro.getSemestre() - 1;
+        int posicion = registro.getPosicion();
+
+        if (indiceSemestre >= 0 && indiceSemestre < 10 && posicion >= 0 && posicion < 20) {
+            notas[indiceSemestre][posicion] = null;
+            nombresMaterias[indiceSemestre][posicion] = null;
+            historialMaterias.remove(registro.getNombreMateria() + " (Semestre " + registro.getSemestre() + ")");
+        }
+    }
+
+    public void restaurarNota(RegistroNota registro) {
+        if (registro == null) {
+            return;
+        }
+
+        int indiceSemestre = registro.getSemestre() - 1;
+        int posicion = registro.getPosicion();
+
+        if (indiceSemestre >= 0 && indiceSemestre < 10 && posicion >= 0 && posicion < 20) {
+            notas[indiceSemestre][posicion] = registro.getNota();
+            nombresMaterias[indiceSemestre][posicion] = registro.getNombreMateria();
+            String textoHistorial = registro.getNombreMateria() + " (Semestre " + registro.getSemestre() + ")";
+            if (!historialMaterias.contains(textoHistorial)) {
+                historialMaterias.add(textoHistorial);
+            }
+        }
+    }
+
+    public boolean aproboMateria(String nombreMateria) {
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 20; j++) {
+                if (nombresMaterias[i][j] != null
+                        && nombresMaterias[i][j].equalsIgnoreCase(nombreMateria)
+                        && notas[i][j] != null
+                        && notas[i][j] >= 3.0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public double calcularPromedioSemestre(int semestre) {
+        int indiceSemestre = semestre - 1;
+        double suma = 0;
+        int cantidad = 0;
+
+        if (indiceSemestre < 0 || indiceSemestre >= 10) {
+            return 0.0;
+        }
+
+        for (int i = 0; i < 20; i++) {
+            if (notas[indiceSemestre][i] != null) {
+                suma += notas[indiceSemestre][i];
+                cantidad++;
+            }
+        }
+
+        return cantidad == 0 ? 0.0 : suma / cantidad;
+    }
+
+    public double calcularPromedioAcumulado() {
+        double suma = 0;
+        int cantidad = 0;
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 20; j++) {
+                if (notas[i][j] != null) {
+                    suma += notas[i][j];
+                    cantidad++;
+                }
+            }
+        }
+
+        return cantidad == 0 ? 0.0 : suma / cantidad;
+    }
+
+    public String generarReporteReprobadas() {
+        StringBuilder reporte = new StringBuilder();
+        reporte.append("--- MATERIAS REPROBADAS ---\n");
+        boolean hayReprobadas = false;
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 20; j++) {
+                if (notas[i][j] != null && notas[i][j] < 3.0) {
+                    reporte.append(nombresMaterias[i][j])
+                           .append(" - Nota: ")
+                           .append(notas[i][j])
+                           .append(" - Semestre ")
+                           .append(i + 1)
+                           .append("\n");
+                    hayReprobadas = true;
+                }
+            }
+        }
+
+        if (!hayReprobadas) {
+            reporte.append("No tiene materias reprobadas.\n");
+        }
+
+        return reporte.toString();
+    }
+
+    public String generarReporteAcademico() {
         StringBuilder reporte = new StringBuilder();
         reporte.append("--- REPORTE ACADEMICO ---\n");
-        reporte.append("Estudiante: ").append(this.nombre).append(" ID: ").append(this.id).append(")\n");
+        reporte.append("Estudiante: ").append(nombre).append(" (ID: ").append(id).append(")\n");
 
         int materiasAprobadas = 0;
         int materiasReprobadas = 0;
-        double sumaTotalAcumulada = 0;
-        int totalMateriasCursadas = 0;
 
-        // recorremos los diez semestres
-        for (int i = 0; i < 10; i++){
-            double sumaSemestre = 0;
-            int materiasSemestre = 0;
+        for (int i = 0; i < 10; i++) {
             boolean tieneNotas = false;
 
-            //recorremos las 20 posibles materias de ese semestre 
-            for (int j = 0; j < 20; j++){
-                if (this.notas[i][j] != null){ // solo procesamos si hay una nota real
-                    if(!tieneNotas){
+            for (int j = 0; j < 20; j++) {
+                if (notas[i][j] != null) {
+                    if (!tieneNotas) {
                         reporte.append("Semestre ").append(i + 1).append(":\n");
                         tieneNotas = true;
                     }
 
-                    double notaActual = this.notas[i][j];
-                    reporte.append(this.nombresMaterias[i][j]).append(": ").append(notaActual).append("\n");
+                    reporte.append(nombresMaterias[i][j]).append(": ").append(notas[i][j]).append("\n");
 
-                    sumaSemestre += notaActual;
-                    materiasSemestre++;
-
-                    //logica de aprobacion escala 0 a 5, aprueba con 3.0
-                    if (notaActual >= 3.0){
+                    if (notas[i][j] >= 3.0) {
                         materiasAprobadas++;
                     } else {
                         materiasReprobadas++;
                     }
                 }
-            } 
+            }
 
-            //si curso materias en ese semestre calculamos su promedio
-            if(tieneNotas){
-                double promedioSemestre = sumaSemestre / materiasSemestre;
-                reporte.append("Promedio Semestre: ").append(String.format("%.2f", promedioSemestre)).append("\n\n");
-                
-                sumaTotalAcumulada += sumaSemestre;
-                totalMateriasCursadas += materiasSemestre;
+            if (tieneNotas) {
+                reporte.append("Promedio Semestre: ")
+                       .append(String.format("%.2f", calcularPromedioSemestre(i + 1)))
+                       .append("\n\n");
             }
         }
 
         reporte.append("=== RESUMEN ===\n");
-        if (totalMateriasCursadas > 0){
-            double promedioAcumulado = sumaTotalAcumulada / totalMateriasCursadas;
-            reporte.append("Promedio acumulado: ").append(String.format("%.2f", promedioAcumulado)).append("\n");
-        } else {
-            reporte.append("Promedio acumulado: 0.0 (sin notas aun)\n");
-        }
+        reporte.append("Promedio acumulado: ").append(String.format("%.2f", calcularPromedioAcumulado())).append("\n");
         reporte.append("Materias aprobadas: ").append(materiasAprobadas).append("\n");
         reporte.append("Materias reprobadas: ").append(materiasReprobadas).append("\n");
 
         return reporte.toString();
     }
 
-    //polimorfismo, sobreescritura del metodo de la clase padre
     @Override
-    public void mostrarInformacion(){
-        System.out.println("ID: " + this.id);
-        System.out.println("Nombre: " + this.nombre);
-        System.out.println("Email: " + this.email);
-        System.out.println("Semestre Actual: " + this.semestreActual);
+    public void mostrarInformacion() {
+        System.out.println("ID: " + id);
+        System.out.println("Nombre: " + nombre);
+        System.out.println("Email: " + email);
+        System.out.println("Semestre Actual: " + semestreActual);
+        System.out.println("Promedio acumulado: " + String.format("%.2f", calcularPromedioAcumulado()));
     }
-
-   
 }

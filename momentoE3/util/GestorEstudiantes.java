@@ -1,11 +1,10 @@
 package momentoE3.util;
 
-import momentoE3.modelo.Estudiante;
-import momentoE3.excepciones.EstudianteNoEncontradoException;
 import java.util.HashMap;
+import momentoE3.excepciones.EstudianteNoEncontradoException;
+import momentoE3.modelo.Estudiante;
 
 public class GestorEstudiantes {
-    
     private HashMap<String, Estudiante> directorioEstudiantes;
 
     public GestorEstudiantes() {
@@ -17,10 +16,11 @@ public class GestorEstudiantes {
     }
 
     public Estudiante buscarEstudiante(String id) throws EstudianteNoEncontradoException {
-        if (!directorioEstudiantes.containsKey(id)) {
+        Estudiante estudiante = directorioEstudiantes.get(id);
+        if (estudiante == null) {
             throw new EstudianteNoEncontradoException("No existe estudiante con ID: " + id);
         }
-        return directorioEstudiantes.get(id);
+        return estudiante;
     }
 
     public void mostrarEstudiantes() {
@@ -28,14 +28,15 @@ public class GestorEstudiantes {
             System.out.println("No hay estudiantes registrados.");
             return;
         }
-        for (Estudiante est : directorioEstudiantes.values()) {
-            System.out.println("- ID: " + est.getId() + " | Nombre: " + est.getNombre());
+
+        for (Estudiante estudiante : directorioEstudiantes.values()) {
+            System.out.println("- ID: " + estudiante.getId() + " | Nombre: " + estudiante.getNombre());
         }
     }
 
     public Estudiante eliminarEstudiante(String id) throws EstudianteNoEncontradoException {
-        Estudiante est = buscarEstudiante(id);
+        Estudiante estudiante = buscarEstudiante(id);
         directorioEstudiantes.remove(id);
-        return est;
+        return estudiante;
     }
 }

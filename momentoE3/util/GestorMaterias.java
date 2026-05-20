@@ -1,14 +1,13 @@
 package momentoE3.util;
 
 import java.util.HashMap;
-
+import momentoE3.excepciones.ColaDeEsperaVaciaException;
 import momentoE3.excepciones.CupoLlenoException;
+import momentoE3.excepciones.PreRequisitoNoAprobadoException;
 import momentoE3.modelo.Estudiante;
 import momentoE3.modelo.Materia;
 
 public class GestorMaterias {
-
-    // Guardamos las materias usando su código como llave rápida
     private HashMap<String, Materia> directorioMaterias;
 
     public GestorMaterias() {
@@ -23,57 +22,90 @@ public class GestorMaterias {
         return directorioMaterias.get(codigo);
     }
 
-    /**
-     * Intenta inscribir a un estudiante. Si no hay cupo, lo manda a la cola (Queue).
-     */
-    public void inscribirEstudiante(Materia materia, Estudiante estudiante) {
-        try {
-            materia.ocuparCupo();
-            System.out.println("Inscripción exitosa. Cupo asignado a: " + estudiante);
-        } catch (CupoLlenoException e) {
-            System.out.println("--- " + e.getMessage() + " ---");
-            // Usamos la cola que creaste en la clase Materia
-            materia.encolarEstudiante(estudiante);
-            System.out.println("El estudiante " + estudiante + " ha sido agregado a la COLA DE ESPERA.");
+    public void agregarPrerrequisito(Materia materiaBase, Materia prerrequisito) {
+        if (materiaBase == null || prerrequisito == null) {
+            System.out.println("Materia base o pre-requisito invalido.");
+            return;
+        }
+
+        if (!materiaBase.getPrerrequisitos().contains(prerrequisito)) {
+            materiaBase.getPrerrequisitos().add(prerrequisito);
         }
     }
 
-    /**
-     * Cancela la inscripción. Si hay alguien en la cola, le da el cupo automáticamente.
-     */
-    public void cancelarInscripcion(Materia materia, Estudiante estudiante) {
-        // Intentamos liberar un cupo. Si Materia no tiene el método
-        // 'liberarCupo', usamos en su lugar 'devolverCupo' si existe.
-        try {
-            // Intento reflejar posible nombre alternativo
-            java.lang.reflect.Method m = materia.getClass().getMethod("liberarCupo");
-            m.invoke(materia);
-            System.out.println("Inscripción cancelada. Cupo liberado.");
-        } catch (NoSuchMethodException e1) {
-            try {
-                java.lang.reflect.Method m2 = materia.getClass().getMethod("devolverCupo");
-                m2.invoke(materia);
-                System.out.println("Inscripción cancelada. Cupo liberado (devolverCupo). ");
-            } catch (Exception e2) {
-                // No existe método público para liberar cupo: avisamos y continuamos
-                System.out.println("Inscripción cancelada. (No se pudo invocar método para liberar cupo en Materia). ");
-            }
-        } catch (Exception ex) {
-            System.out.println("Inscripción cancelada. (Error al liberar cupo). ");
+    public boolean inscribirEstudiante(Materia materia, Estudiante estudiante)
+            throws PreRequisitoNoAprobadoException {
+        if (materia == null || estudiante == null) {
+            System.out.println("Materia o estudiante invalido.");
+            return false;
         }
-        
-        // Verificamos si hay alguien haciendo fila en la Cola (Queue)
-        if (!materia.getColaEspera().isEmpty()) {
-            // poll() saca al primer estudiante de la cola (FIFO)
-            Estudiante afortunado = materia.getColaEspera().poll();
-            try {
-                materia.ocuparCupo();
-                System.out.println("¡Noticia! El cupo liberado ha sido asignado automáticamente a: " + afortunado + " (sacado de la cola de espera).");
-            } catch (CupoLlenoException ex) {
-                // Esto no debería ejecutarse porque acabamos de liberar un cupo
+
+        if (materia.estaInscrito(estudiante)) {
+            System.out.println("El estudiante ya esta inscrito en esta materia.");
+            return false;
+        }
+
+        validarPrerrequisitos(materia, estudiante);
+
+        try {
+            materia.agregarInscrito(estudiante);
+            System.out.println("Inscripcion exitosa para: " + estudiante.getNombre());
+            return true;
+        } catch (CupoLlenoException e) {
+            materia.encolarEstudiante(estudiante);
+            System.out.println(e.getMessage());
+            System.out.println("El estudiante " + estudiante.getNombre() + " fue agregado a la cola de espera.");
+            return false;
+        }
+    }
+
+    public boolean cancelarInscripcion(Materia materia, Estudiante estudiante) {
+        if (materia == null || estudiante == null) {
+            System.out.println("Materia o estudiante invalido.");
+            return false;
+        }
+
+        boolean eliminado = materia.retirarInscrito(estudiante);
+
+        if (!eliminado) {
+            System.out.println("El estudiante no estaba inscrito en esta materia.");
+            return false;
+        }
+
+        System.out.println("Inscripcion cancelada. Cupo liberado.");
+        asignarPrimerEstudianteEnCola(materia);
+        return true;
+    }
+
+    public void asignarPrimerEstudianteEnCola(Materia materia) {
+        if (materia == null || materia.getColaEspera().isEmpty()) {
+            return;
+        }
+
+        Estudiante siguiente = materia.getColaEspera().poll();
+        try {
+            materia.agregarInscrito(siguiente);
+            System.out.println("Cupo asignado automaticamente a: " + siguiente.getNombre());
+        } catch (CupoLlenoException e) {
+            materia.encolarEstudiante(siguiente);
+        }
+    }
+
+    public Estudiante sacarPrimeroCola(Materia materia) throws ColaDeEsperaVaciaException {
+        if (materia == null || materia.getColaEspera().isEmpty()) {
+            throw new ColaDeEsperaVaciaException("La cola de espera esta vacia.");
+        }
+        return materia.getColaEspera().poll();
+    }
+
+    private void validarPrerrequisitos(Materia materia, Estudiante estudiante)
+            throws PreRequisitoNoAprobadoException {
+        for (Materia requisito : materia.getPrerrequisitos()) {
+            if (!estudiante.aproboMateria(requisito.getNombre())) {
+                throw new PreRequisitoNoAprobadoException(
+                    "El estudiante no ha aprobado el pre-requisito: " + requisito.getNombre()
+                );
             }
         }
     }
 }
-    
-
